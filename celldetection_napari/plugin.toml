@@ -1,0 +1,11 @@
+name = "celldetection-napari"
+display_name = "Cell Detection"
+
+[[contributions.commands]]
+id = "celldetection-napari.cell_detection"
+title = "Cell Detection"
+python_name = "celldetection_napari.plugin:CellDetectionWidget"
+
+[[contributions.widgets]]
+command = "celldetection-napari.cell_detection"
+display_name = "Cell Detection"
