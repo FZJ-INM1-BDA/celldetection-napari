@@ -20,6 +20,8 @@ class CpnInterface:
     ):
         if img.ndim == 2:
             img = cv2.cvtColor(img, cv2.COLOR_GRAY2RGB)
+        if img.ndim == 3 and img.shape[-1] > 3:
+            img = img[..., :3]
         img = img / div
         x = cd.data.to_tensor(img, transpose=True, dtype=torch.float32)[None]
         with torch.no_grad():
