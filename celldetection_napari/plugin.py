@@ -2,6 +2,8 @@ from napari import Viewer
 from napari.qt.threading import thread_worker
 from qtpy import QtWidgets as W
 from qtpy import QtGui as G
+from magicgui.widgets import create_widget
+import napari
 from .cpn import CpnInterface
 from skimage.util import img_as_ubyte, invert
 from skimage.exposure import adjust_gamma
@@ -128,12 +130,13 @@ class CellDetectionWidget(W.QWidget):
         label.setMaximumHeight(20)
         label.setFont(title_font)
         self.layout.addRow(label)
-        layer_model = viewer.window.qt_viewer.layers.model()
-        image_combo = W.QComboBox()
-        image_combo.setModel(co.ItemModel(layer_model, self))
-        image_combo.currentTextChanged.connect(self._update_inputs)
-        self.layout.addRow(image_combo)
-        self._image_combo = image_combo
+        
+        self._image_combo = create_widget(annotation=napari.layers.Image)
+        self._image_combo.reset_choices()
+        viewer.layers.events.inserted.connect(self._image_combo.reset_choices)
+        viewer.layers.events.removed.connect(self._image_combo.reset_choices)
+        self._image_combo.changed.connect(self._update_inputs)
+        self.layout.addRow(self._image_combo.native)
 
         # Model selection title
         label = W.QLabel('Model selection')
@@ -226,8 +229,8 @@ class CellDetectionWidget(W.QWidget):
                 i.update_model(model)
 
     def _update_inputs(self, text):
-        layer = self._viewer.layers[self._image_combo.currentText()]
-        img = layer.data
+        
+        img = self._image_combo.value.data
 
         key = 'data_preprocessing.perc_toggle'
         if img.itemsize > 1:
@@ -281,8 +284,7 @@ class CellDetectionWidget(W.QWidget):
         self.run_button.set_running(True)
         self._set_run_enabled(False, True)
 
-        layer = self._viewer.layers[self._image_combo.currentText()]
-        img = layer.data
+        img = self._image_combo.value.data
 
         print("Img", img.dtype, img.shape, flush=True)
 
