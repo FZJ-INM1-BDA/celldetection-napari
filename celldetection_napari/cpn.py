@@ -18,6 +18,10 @@ class CpnInterface:
             return_labels=True,
             return_viewable_contours=True,
     ):
+        if img.itemsize > 1 and (img.max() > 1 or img.min() < 0):
+            print('Image values outside expected range [0, 1]. '
+                  'Normalizing image via percentile norm.')
+            img = cd.data.normalize_percentile(img)
         if img.ndim == 2:
             img = cv2.cvtColor(img, cv2.COLOR_GRAY2RGB)
         if img.ndim == 3 and img.shape[-1] > 3:
