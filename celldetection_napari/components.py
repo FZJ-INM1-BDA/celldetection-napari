@@ -2,9 +2,7 @@ from qtpy import QtWidgets as W
 from typing import List, Tuple, Union, Sequence, Any
 from os.path import join, isfile, isdir, basename, dirname
 import torch
-from qtpy.QtCore import QModelIndex, QSortFilterProxyModel, Qt
-from napari._qt.containers import QtLayerList
-from napari.layers import Image, Labels
+from qtpy.QtCore import Qt
 
 
 def set_model_attr_(model, name, val):
@@ -13,21 +11,6 @@ def set_model_attr_(model, name, val):
 
 def get_model_attr(model, name):
     return model.__dict__[name]
-
-
-class ItemModel(QSortFilterProxyModel):
-    def __init__(self, layers: QtLayerList, parent=None):
-        super().__init__(parent)
-        self.setSourceModel(layers)
-
-    def filterAcceptsRow(self, row: int, parent: QModelIndex) -> bool:
-        model = self.sourceModel()
-        layer = model.data(model.index(row, self.filterKeyColumn(), parent), role=Qt.UserRole)
-        return isinstance(layer, Image) and not isinstance(layer, Labels)
-
-    def data(self, index: QModelIndex, role: int = Qt.DisplayRole) -> Any:
-        if role in (Qt.DecorationRole, Qt.DisplayRole, Qt.UserRole):
-            return super().data(index, role)
 
 
 class Slider(W.QSlider):
