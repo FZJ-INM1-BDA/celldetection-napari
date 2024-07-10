@@ -31,6 +31,12 @@ class Slider(W.QSlider):
         self.update_default(default)
         self.update_display()
 
+    def setRange(self, p_int, p_int_1):
+        super().setRange(int(p_int), int(p_int_1))
+
+    def setSliderPosition(self, p_int):
+        super().setSliderPosition(int(p_int))
+
     def update_default(self, default):
         self._default = default
         if self._default is not None:
